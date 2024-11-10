@@ -55,13 +55,13 @@ def get_data():
     # geojson_data = json.loads(combined_gdf.to_json())
 
     # Прочитайте данные из файла houses1.json
-    with open('houses1.json', 'r', encoding='utf-8') as file:
-        houses_data = json.load(file)
+    # with open('houses1.json', 'r', encoding='utf-8') as file:
+    #     houses_data = json.load(file)
 
     # Преобразование координат и фильтрация данных
     transformer = Transformer.from_crs("EPSG:3857", "EPSG:4326", always_xy=True)
-    transformed_houses_data = transform_and_filter_houses_data(houses_data, transformer)
-    print(transformed_houses_data)
+    # transformed_houses_data = transform_and_filter_houses_data(houses_data, transformer)
+    # print(transformed_houses_data)
 
     combined_polygons_gdf = pd.concat(polygons_gdfs, ignore_index=True)
     # combined_lines_gdf = pd.concat(lines_gdfs, ignore_index=True)
@@ -78,7 +78,7 @@ def get_data():
         'polygons': json.loads(combined_polygons_gdf.to_json()),
         'lines': transformed_coordinates_list,
         'points': json.loads(combined_points_gdf.to_json()),
-        'houses': transformed_houses_data
+        # 'houses': transformed_houses_data
     }
     
     return jsonify({'data': geojson_data}), 201
@@ -120,13 +120,13 @@ def transform_coordinates_list(coordinates_list, transformer):
         transformed_list.append(transformed_line)
     return transformed_list
 
-def transform_and_filter_houses_data(houses_data, transformer):
-    transformed_houses = []
-    for item in houses_data:
-        if isinstance(item, list) and len(item) == 2 and item[1] not in ["ot", "metro"]:
-            transformed_item = transform_coordinates(item[0], transformer)
-            transformed_houses.append([transformed_item, item[1]])
-        elif isinstance(item, list) and len(item) > 2 and item[-1] not in ["ot", "metro"]:
-            transformed_item = transform_coordinates(item[0], transformer)
-            transformed_houses.append([transformed_item, item[-1]])
-    return transformed_houses
+# def transform_and_filter_houses_data(houses_data, transformer):
+#     transformed_houses = []
+#     for item in houses_data:
+#         if isinstance(item, list) and len(item) == 2 and item[1] not in ["ot", "metro"]:
+#             transformed_item = transform_coordinates(item[0], transformer)
+#             transformed_houses.append([transformed_item, item[1]])
+#         elif isinstance(item, list) and len(item) > 2 and item[-1] not in ["ot", "metro"]:
+#             transformed_item = transform_coordinates(item[0], transformer)
+#             transformed_houses.append([transformed_item, item[-1]])
+#     return transformed_houses
