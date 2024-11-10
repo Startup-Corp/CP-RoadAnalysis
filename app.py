@@ -1,4 +1,4 @@
-from flask import Flask, jsonify, render_template
+from flask import Flask, jsonify, render_template, send_from_directory
 import geopandas as gpd
 import json
 from shapely.geometry import Polygon, MultiPolygon, LineString, MultiLineString, Point
@@ -10,6 +10,10 @@ app = Flask(__name__)
 @app.route("/")
 def hello_world():
     return render_template('./test.html')
+
+@app.route("/images/<filename>")
+def get_image(filename):
+    return send_from_directory("", filename)
 
 @app.route("/data")
 def get_data():

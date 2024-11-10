@@ -1,182 +1,225 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Document</title>
     <script src="https://maps.api.2gis.ru/2.0/loader.js?pkg=full"></script>
 
     <script>
-        const color_dict = {
-            "metro": "#8400F7",
-            "ot": "#3D66F3",
-            "Административные сооружения": "#06B0E5",
-            "Жилые дома": "blue",  
-            "Частные дома": "#FA5A32",
-            "Дома_новостройки": "#4BEADA",
-            "Школы": "#FC0001",
-            "Дошкольные": "#80FCAE",
-            "Киоски": "#D7F300",
-            "Известный по назначению": "#F8B361",
-            "Подземное здание": "#F388EF"
-        }
+      const color_dict = {
+        metro: "#8400F7",
+        ot: "#3D66F3",
+        "Административные сооружения": "#06B0E5",
+        "Жилые дома": "blue",
+        "Частные дома": "#FA5A32",
+        Дома_новостройки: "#4BEADA",
+        Школы: "#FC0001",
+        Дошкольные: "#80FCAE",
+        Киоски: "#D7F300",
+        "Известный по назначению": "#F8B361",
+        "Подземное здание": "#F388EF",
+      };
 
-        let map;
-        let mapInitialized = false;
+      let map;
+      let mapInitialized = false;
 
-        // DG.then(function () {
-        //     if (!mapInitialized) {
-        //         map = DG.map('map', {
-        //             center: [55.565029, 37.452288],
-        //             zoom: 13
-        //         });
-        //         mapInitialized = true;
-        //     }
-        // });
+      // DG.then(function () {
+      //     if (!mapInitialized) {
+      //         map = DG.map('map', {
+      //             center: [55.565029, 37.452288],
+      //             zoom: 13
+      //         });
+      //         mapInitialized = true;
+      //     }
+      // });
 
-        function initializeMap() {
-            return new Promise((resolve, reject) => {
-                DG.then(function () {
-                    if (!mapInitialized) {
-                        map = DG.map('map', {
-                            center: [55.565029, 37.452288],
-                            zoom: 13
-                        });
-                        mapInitialized = true;
-                        resolve();
-                    } else {
-                        resolve();
-                    }
-                }, function (error) {
-                    reject(error);
+      function initializeMap() {
+        return new Promise((resolve, reject) => {
+          DG.then(
+            function () {
+              if (!mapInitialized) {
+                map = DG.map("map", {
+                  center: [55.565029, 37.452288],
+                  zoom: 13,
                 });
-            });
-        }
-
-        function drawBuild(polygons, type) {
-            if (Array.isArray(polygons[0][0])){
-                drawBuild(polygons[0]);
-            } else {
-                var latlngs = polygons;
-                if (map) {
-                    DG.polygon(latlngs, {color: color_dict[type]}).addTo(map);
-                } else {
-                    console.error('Map is not initialized');
-                }
+                mapInitialized = true;
+                resolve();
+              } else {
+                resolve();
+              }
+            },
+            function (error) {
+              reject(error);
             }
+          );
+        });
+      }
+
+      function drawBuild(polygons, type) {
+        if (Array.isArray(polygons[0][0])) {
+          drawBuild(polygons[0]);
+        } else {
+          var latlngs = polygons;
+          if (map) {
+            DG.polygon(latlngs, { color: color_dict[type] }).addTo(map);
+          } else {
+            console.error("Map is not initialized");
+          }
         }
+      }
 
-        function drawStreets(line) {
-            var latlngs = line.slice(0, 2);
-            if (map) {
-                DG.polyline(latlngs, {color: getColor(line[2])}).addTo(map);
-            } else {
-                console.error('Map is not initialized');
-            }
+      function drawStreets(line) {
+        var latlngs = line.slice(0, 2);
+        if (map) {
+          DG.polyline(latlngs, { color: getColor(line[2]) }).addTo(map);
+        } else {
+          console.error("Map is not initialized");
         }
+      }
 
-        // function drawPoints(point) {
-        //     if (map) {
-        //         DG.marker(point).addTo(map);
-        //     } else {
-        //         console.error('Map is not initialized');
-        //     }
-        // }
+      // function drawPoints(point) {
+      //     if (map) {
+      //         DG.marker(point).addTo(map);
+      //     } else {
+      //         console.error('Map is not initialized');
+      //     }
+      // }
 
-        function getColor(value) {
-            // Ограничиваем значение в диапазоне от 0 до 4000
-            value = Math.max(0, Math.min(4000, value));
+      function getColor(value) {
+        // Ограничиваем значение в диапазоне от 0 до 4000
+        value = Math.max(0, Math.min(4000, value));
 
-            // Вычисляем процентное значение
-            const percent = value / 4000;
+        // Вычисляем процентное значение
+        const percent = value / 4000;
 
-            // Вычисляем компоненты цвета
-            const red = Math.round(255 * percent);
-            const green = Math.round(255 * (1 - percent));
-            const blue = 0;
+        // Вычисляем компоненты цвета
+        const red = Math.round(255 * percent);
+        const green = Math.round(255 * (1 - percent));
+        const blue = 0;
 
-            // Возвращаем цвет в формате RGB
-            return `rgb(${red}, ${green}, ${blue})`;
-        }
+        // Возвращаем цвет в формате RGB
+        return `rgb(${red}, ${green}, ${blue})`;
+      }
 
-        // function drawStreets(line) {
-        //     var latlngs = line;
-        //     // DG.polyline(latlngs, {color: 'blue'}).addTo(map);
-        //     DG.polyline(latlngs, {className: 'gradient-line'}).addTo(map);
-        // }
+      // function drawStreets(line) {
+      //     var latlngs = line;
+      //     // DG.polyline(latlngs, {color: 'blue'}).addTo(map);
+      //     DG.polyline(latlngs, {className: 'gradient-line'}).addTo(map);
+      // }
     </script>
 
     <style>
-        body {
-            display: flex;
-            height: 100vh;
-            width: 100vw;
-            margin: 0;
-        }
-        #map {
-            margin: auto;
-            height: calc(100% - 50px);
-            width: calc(100% - 50px);
-        }
-        .gradient-line {
-            stroke: url(#gradient);
-            stroke-width: 5;
-        }
+      body {
+        display: flex;
+        height: 100vh;
+        width: 100vw;
+        margin: 0;
+        flex-direction: column;
+      }
+      #imageSelector {
+        width: fit-content;
+        background-color: orange;
+        margin-top: 20px;
+        margin-left: 30px;
+        margin-bottom: 10px;
+      }
+      #map {
+        margin: auto;
+        /* height: calc(100% - 50px); */
+        height: 100%;
+        width: calc(100% - 50px);
+      }
+      .gradient-line {
+        stroke: url(#gradient);
+        stroke-width: 5;
+      }
+      #mapContainer {
+        position: relative;
+        width: 100%;
+        height: 90%; /* Установите высоту контейнера по вашему усмотрению */
+      }
+      #imageDisplay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        display: none;
+        pointer-events: none; /* Чтобы изображение не блокировало взаимодействие с картой */
+      }
     </style>
-</head>
-<body>
-    <svg width="0" height="0">
-        <defs>
-            <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                <stop offset="0%" style="stop-color:red;stop-opacity:1" />
-                <stop offset="100%" style="stop-color:blue;stop-opacity:1" />
-            </linearGradient>
-        </defs>
-    </svg>
-    <div id="map"></div>
-</body>
-<script>
+  </head>
+  <body>
+    <select id="imageSelector">
+      <option value="Карта">Карта</option>
+      <option value="Очередь_1.jpg">Очередь_1</option>
+      <option value="Очередь_2.jpg">Очередь_2</option>
+      <option value="Очередь_3.jpg">Очередь_3</option>
+    </select>
+
+    <div id="mapContainer">
+        <div id="map"></div>
+        <img
+        id="imageDisplay"
+        src=""
+        alt="Selected Image"
+        style="display: none"
+      />
+    </div>
+  </body>
+  <script>
     async function fetchData() {
-        try {
-            const response = await fetch("/data");
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
-            const data = (await response.json()).data;
-
-            console.log(data.polygons)
-            if (data.polygons) {
-                data.polygons.features.forEach(feature => {
-                    console.log(feature);
-                    drawBuild(feature.properties.coordinates, feature.properties.Type);
-                });
-            }
-
-            if (data.lines) {
-                data.lines.forEach(line => {
-                    drawStreets(line);
-                });
-            }
-
-            if (data.houses) {
-                console.log(data.houses)
-                // data.lines.forEach(line => {
-                //     drawStreets(line);
-                // });
-            }
-
-            // if (data.points) {
-            //     data.points.features.forEach(feature => {
-            //         drawPoints(feature.properties.coordinates);
-            //     });
-            // }
-
-        } catch (error) {
-            console.error('Error fetching data:', error);
+      try {
+        const response = await fetch("/data");
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
         }
+        const data = (await response.json()).data;
+
+        console.log(data.polygons);
+        if (data.polygons) {
+          data.polygons.features.forEach((feature) => {
+            console.log(feature);
+            drawBuild(feature.properties.coordinates, feature.properties.Type);
+          });
+        }
+
+        if (data.lines) {
+          data.lines.forEach((line) => {
+            drawStreets(line);
+          });
+        }
+
+        if (data.houses) {
+          console.log(data.houses);
+          // data.lines.forEach(line => {
+          //     drawStreets(line);
+          // });
+        }
+
+        // if (data.points) {
+        //     data.points.features.forEach(feature => {
+        //         drawPoints(feature.properties.coordinates);
+        //     });
+        // }
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
     }
 
     // Вызов функции для получения данных при загрузке страницы
     initializeMap().then(fetchData);
-</script>
+  </script>
+
+  <script>
+    document
+      .getElementById("imageSelector")
+      .addEventListener("change", function () {
+        var selectedImage = this.value;
+        var imageDisplay = document.getElementById("imageDisplay");
+        imageDisplay.src = "/images/" + selectedImage;
+        imageDisplay.style.display = "block";
+      });
+  </script>
 </html>
